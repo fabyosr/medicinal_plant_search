@@ -215,6 +215,7 @@ def load_model_components():
     st.info("✅ dual_encoder_model loaded !")
 
     model_weights_path = os.path.join(save_directory, 'dual_encoder_model_weights.pth')
+    st.info(f"✅ Loading model from {model_weights_path}...")
     dual_encoder_model.load_state_dict(torch.load(model_weights_path, map_location=torch.device('cpu')))
     # Motivo: Carrega os pesos treinados (do GD).
 
