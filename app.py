@@ -124,63 +124,97 @@ st.title('Sistema de Busca Semântica de Plantas Medicinais')
 
 # --- Model Architecture Definition (idêntica ao notebook) ---
 # Define the Image Encoder
+# Define the Image Encoder
 class ImageEncoder(nn.Module):
     def __init__(self, model_name='resnet50', embed_dim=512, freeze_backbone=True):
         super().__init__()
-        # Motivo: Construtor padrão de módulo PyTorch.
-
+        # Load pre-trained ResNet model
         self.backbone = models.__dict__[model_name](pretrained=True)
-        # Motivo: Carrega ResNet50 pré-treinado (features visuais de alta qualidade).
 
+        # Freeze backbone parameters if requested
         if freeze_backbone:
             for param in self.backbone.parameters():
                 param.requires_grad = False
-            # Motivo: Congela o backbone para inference (economia de memória e velocidade).
 
+        # Replace the final classification layer with an identity layer
+        # and add a new projection layer to match embed_dim
         if model_name.startswith('resnet'):
             in_features = self.backbone.fc.in_features
-            self.backbone.fc = nn.Identity()  # Remove the classification head
-            # Motivo: Remove a última camada de classificação — queremos apenas as features (2048-d).
+            self.backbone.fc = nn.Identity() # Remove the classification head
+        else:
+            # Add more model types here if needed (e.g., Vision Transformer)
+            raise ValueError(f"Model {model_name} not explicitly supported for layer modification.")
 
         self.projection = nn.Linear(in_features, embed_dim)
-        # Motivo: Projeta o vetor de features para o espaço comum de 512 dimensões (mesmo do texto).
 
     def forward(self, x):
         features = self.backbone(x)
         embeddings = self.projection(features)
         return embeddings
-        # Motivo: Forward pass completo do encoder de imagem.
+         Motivo: Forward pass completo do encoder de imagem.
 
 # Define the Text Encoder
+# Define the Text Encoder
 class TextEncoder(nn.Module):
-    def __init__(self, model_name='bert-base-uncased', embed_dim=512, freeze_backbone=True):
+    def __init__(self, model_name=tokenizer_model_pt_br, embed_dim=512, freeze_backbone=True):
         super().__init__()
+        # Carrega o modelo pré-treinado do Hugging Face (BERTimbau ou similar)
         self.backbone = AutoModel.from_pretrained(model_name)
-        # Motivo: Carrega BERT-base do Hugging Face (contexto textual rico).
 
+        # Congela os pesos do backbone se freeze_backbone=True (transfer learning)
+        # Isso acelera o treino e evita overfitting nos primeiros epochs
         if freeze_backbone:
             for param in self.backbone.parameters():
                 param.requires_grad = False
-            # Motivo: Congela BERT para inference.
 
+        # Obtém o tamanho do hidden state do modelo (normalmente 768 para bert-base)
         in_features = self.backbone.config.hidden_size
+
+        # Projection layer to match the shared embedding dimension
+        # Camada de projeção linear para alinhar o embedding do texto com o da imagem
+        # (ex: 768 → 512)
         self.projection = nn.Linear(in_features, embed_dim)
-        # Motivo: Projeta o CLS token para 512 dimensões.
 
     def forward(self, input_ids, attention_mask):
+        # Passa os tokens pelo modelo BERT e retorna todas as saídas
         outputs = self.backbone(input_ids=input_ids, attention_mask=attention_mask)
-        cls_embedding = outputs.last_hidden_state[:, 0, :]
-        embeddings = self.projection(cls_embedding)
+
+        # Extract the embedding of the [CLS] token (first token in the sequence)
+        # Pega a representação completa de todas as posições da sequência
+        # Shape: [batch_size, max_length=77, hidden_size=768]
+        last_hidden_state = outputs.last_hidden_state
+
+        # Mean pooling (melhor para similaridade)
+        # Multiplica cada token pelo attention_mask para ignorar [PAD]
+        # Shape: [batch_size, 77, 768] * [batch_size, 77, 1] = [batch_size, 77, 768]
+        masked_hidden = last_hidden_state * attention_mask.unsqueeze(-1)
+        # Soma todos os tokens válidos (ignora padding)
+        # Shape: [batch_size, 768]
+        sum_hidden = masked_hidden.sum(dim=1)
+
+        # Conta quantos tokens válidos existem em cada frase
+        # Shape: [batch_size, 1]
+        num_tokens = attention_mask.sum(dim=1).unsqueeze(-1)
+
+        # Divide para obter a média real (mean pooling)
+        # Shape: [batch_size, 768]
+        pooled = sum_hidden / num_tokens
+
+        # Aplica a projeção linear no embedding pooled (MELHOR PRÁTICA)
+        # Shape final: [batch_size, embed_dim] — igual ao ImageEncoder
+        embeddings = self.projection(pooled)
+
+        # Retorna apenas o embedding projetado (pronto para contrastive loss)
         return embeddings
         # Motivo: Usa o token CLS como representação da frase inteira (padrão BERT).
 
 # Combine into Dual Encoder Model
+# Combine into Dual Encoder Model
 class DualEncoder(nn.Module):
-    def __init__(self, embed_dim=512, image_model_name='resnet50', text_model_name='bert-base-uncased', freeze_encoders=True):
+    def __init__(self, embed_dim=512, image_model_name='resnet50', text_model_name=tokenizer_model_pt_br, freeze_encoders=True):
         super().__init__()
         self.image_encoder = ImageEncoder(model_name=image_model_name, embed_dim=embed_dim, freeze_backbone=freeze_encoders)
         self.text_encoder = TextEncoder(model_name=text_model_name, embed_dim=embed_dim, freeze_backbone=freeze_encoders)
-        # Motivo: Combina os dois encoders em um único modelo (dual-encoder).
 
     def forward(self, images, input_ids, attention_mask):
         image_embeddings = self.image_encoder(images)
