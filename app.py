@@ -196,7 +196,16 @@ def load_model_components():
     # Motivo: Carrega tokenizer do diretório local (já baixado do GD).
     st.info("✅ tokenizer loaded !")
 
-    image_transform = torch.load(os.path.join(save_directory, 'image_transform.pth'))
+    #image_transform = torch.load(os.path.join(save_directory, 'image_transform.pth'))
+    image_transform = transforms.Compose([
+        transforms.Resize((224,224)),
+        transforms.ToTensor(),
+        transforms.Normalize(
+            mean=[0.485,0.456,0.406],
+            std=[0.229,0.224,0.225]
+            )
+        ])
+    
     # Motivo: Carrega as transformações exatas usadas no treinamento.
     st.info("✅ image_transform loaded !")
 
