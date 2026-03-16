@@ -1,8 +1,14 @@
+# ==================== Streamlit + Dependências Básicas ====================
 streamlit
-torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 transformers
 pandas
 numpy
 Pillow
 scikit-learn
 gdown
+
+# ==================== PyTorch CPU (OBRIGATÓRIO para o Streamlit Cloud) ====================
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+torchvision
+torchaudio
