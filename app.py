@@ -107,6 +107,7 @@ def download_from_drive():
                 use_cookies=False
             )
             flatten_if_needed(embeddings_save_directory)  # ← NOVA LINHA (corrige nesting)
+            st.write("📁 Arquivos encontrados:", os.listdir(save_directory))
             st.write("📁 Arquivos encontrados:", os.listdir(embeddings_save_directory))
             st.info("✅ Sucesso no download dos dados !")
 
