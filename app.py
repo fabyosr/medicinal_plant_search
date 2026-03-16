@@ -107,8 +107,8 @@ def download_from_drive():
                 use_cookies=False
             )
             flatten_if_needed(embeddings_save_directory)  # ← NOVA LINHA (corrige nesting)
-            st.write("📁 Arquivos encontrados (save_directory):", os.listdir(save_directory))
-            st.write("📁 Arquivos encontrados (embeddings_save_directory):", os.listdir(embeddings_save_directory))
+            st.write(f"📁 Arquivos encontrados ({save_directory}):", os.listdir(save_directory))
+            st.write(f"📁 Arquivos encontrados ({embeddings_save_directory}):", os.listdir(embeddings_save_directory))
             st.info("✅ Sucesso no download dos dados !")
 
     except Exception as e:
@@ -205,7 +205,7 @@ def load_model_components():
             std=[0.229,0.224,0.225]
             )
         ])
-    
+
     # Motivo: Carrega as transformações exatas usadas no treinamento.
     st.info("✅ image_transform loaded !")
 
