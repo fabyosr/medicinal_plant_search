@@ -59,10 +59,10 @@ embeddings_save_directory = './saved_embeddings_and_metadata'
 
 # IDs das pastas no Google Drive — ***SUBSTITUA POR SEUS IDS REAIS***
 # Como obter: Compartilhe cada pasta como "Qualquer pessoa com o link" → copie o ID da URL (ex: 1aBcDeFgHiJkLmNoPqRsTuVwXyZ12345)
-MODEL_COMPONENTS_GD_ID = "10NFY8TiwMwlBnnfBwZ2hVx98M3kfQGg5"
+MODEL_COMPONENTS_GD_ID = "1vPnnFsO_IsDs_I4oE73KGD5Y_BpM0dac"
 # Motivo: Pasta que contém: tokenizer files (vocab.txt, config.json etc.), image_transform.pth e dual_encoder_model_weights.pth.
 
-EMBEDDINGS_GD_ID = "1vPnnFsO_IsDs_I4oE73KGD5Y_BpM0dac"
+EMBEDDINGS_GD_ID = "10NFY8TiwMwlBnnfBwZ2hVx98M3kfQGg5"
 # Motivo: Pasta que contém: image_embeddings.npy, text_embeddings.npy, metadata.csv e a subpasta synthetic_plant_images/.
 
 # Função de download (NOVA — executada uma única vez no início)
