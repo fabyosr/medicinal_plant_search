@@ -221,7 +221,7 @@ def load_embeddings_and_metadata():
 # Carregamento com download automático
 with st.spinner('🔄 Baixando do Google Drive e carregando modelo e dados...'):
     download_from_drive()                      # Motivo: Garante que tudo esteja no disco antes de carregar.
-    #tokenizer, image_transform, dual_encoder_model = load_model_components()
+    tokenizer, image_transform, dual_encoder_model = load_model_components()
     all_image_embeddings, all_text_embeddings, metadata_df = load_embeddings_and_metadata()
 
 st.success('✅ Modelo, embeddings e imagens carregados com sucesso do Google Drive!')
