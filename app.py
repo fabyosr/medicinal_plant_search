@@ -192,7 +192,7 @@ class DualEncoder(nn.Module):
 @st.cache_resource
 def load_model_components():
     # Motivo: Cacheia o carregamento do modelo (executa apenas 1x por sessão — evita recarregar em cada interação).
-    tokenizer = AutoTokenizer.from_pretrained(save_directory)
+    tokenizer = AutoTokenizer.from_pretrained("neuralmind/bert-base-portuguese-cased")
     # Motivo: Carrega tokenizer do diretório local (já baixado do GD).
     st.info("✅ tokenizer loaded !")
 
