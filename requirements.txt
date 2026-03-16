@@ -1,0 +1,8 @@
+streamlit
+torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+transformers
+pandas
+numpy
+Pillow
+scikit-learn
+gdown
