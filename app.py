@@ -47,6 +47,8 @@ import gdown
 # Escolhida porque o projeto é pessoal para teste — não precisa de credenciais OAuth nem Google API complexa.
 # Basta compartilhar a pasta como "Qualquer pessoa com o link".
 
+import shutil  # ← NOVO IMPORT (adicione no topo do arquivo junto com os outros imports)
+
 # === CONFIGURAÇÃO DO GOOGLE DRIVE (NOVA PARTE) ===
 # Diretórios locais onde os arquivos serão salvos após o download
 save_directory = './saved_model_components'
@@ -64,39 +66,53 @@ EMBEDDINGS_GD_ID = "1vPnnFsO_IsDs_I4oE73KGD5Y_BpM0dac"
 # Motivo: Pasta que contém: image_embeddings.npy, text_embeddings.npy, metadata.csv e a subpasta synthetic_plant_images/.
 
 # Função de download (NOVA — executada uma única vez no início)
-def download_from_drive():
-    # Motivo: Centraliza o download condicional. Só baixa se o arquivo-chave não existir (evita download repetido em cada rerun do Streamlit).
-    os.makedirs(save_directory, exist_ok=True)
-    # Motivo: Cria a pasta local caso não exista (gdown precisa do diretório de destino).
 
+def download_from_drive():
+    os.makedirs(save_directory, exist_ok=True)
     os.makedirs(embeddings_save_directory, exist_ok=True)
-    # Motivo: Mesmo para a pasta de embeddings (inclui a subpasta de imagens).
+
+    def flatten_if_needed(target_dir):
+        """Remove subpasta extra criada pelo gdown (problema comum)"""
+        items = os.listdir(target_dir)
+        subdirs = [d for d in items if os.path.isdir(os.path.join(target_dir, d))]
+        
+        if len(subdirs) == 1 and len(items) <= 10:  # só 1 subpasta → é o caso do gdown
+            subfolder = os.path.join(target_dir, subdirs[0])
+            st.info(f"🔧 Movendo arquivos da subpasta extra: {subdirs[0]}")
+            
+            for item in os.listdir(subfolder):
+                shutil.move(os.path.join(subfolder, item), os.path.join(target_dir, item))
+            os.rmdir(subfolder)
+            st.success(f"✅ Arquivos movidos para {target_dir}")
 
     try:
-        # Verifica se o modelo já foi baixado (usando um arquivo-chave)
+        # === MODEL COMPONENTS ===
         if not os.path.exists(os.path.join(save_directory, 'dual_encoder_model_weights.pth')):
-            st.info("🔄 Baixando componentes do modelo do Google Drive... (pode levar alguns minutos)")
+            st.info("🔄 Baixando componentes do modelo do Google Drive...")
             gdown.download_folder(
                 id=MODEL_COMPONENTS_GD_ID,
                 output=save_directory,
-                quiet=False,      # Motivo: Mostra barra de progresso no terminal/console
-                use_cookies=False # Motivo: Funciona com links públicos sem precisar de login
+                quiet=False,
+                use_cookies=False
             )
-            # Motivo: gdown.download_folder baixa a pasta inteira recursivamente — exatamente o que precisamos.
+            flatten_if_needed(save_directory)   # ← NOVA LINHA (corrige nesting)
 
-        # Verifica se os embeddings já foram baixados
+        # === EMBEDDINGS + IMAGENS ===
         if not os.path.exists(os.path.join(embeddings_save_directory, 'metadata.csv')):
-            st.info("🔄 Baixando embeddings, metadados e imagens sintéticas do Google Drive...")
+            st.info("🔄 Baixando embeddings, metadados e imagens...")
             gdown.download_folder(
                 id=EMBEDDINGS_GD_ID,
                 output=embeddings_save_directory,
                 quiet=False,
                 use_cookies=False
             )
+            flatten_if_needed(embeddings_save_directory)  # ← NOVA LINHA (corrige nesting)
+            st.write("📁 Arquivos encontrados:", os.listdir(embeddings_save_directory))
+            st.info("✅ Sucesso no download dos dados !")
+
     except Exception as e:
-        st.error(f"❌ Erro ao baixar do Google Drive: {str(e)}\nVerifique se os IDs estão corretos e as pastas estão públicas.")
-        st.stop()
-    # Motivo: Tratamento robusto de erro — impede que o app quebre se o GD estiver inacessível.
+        st.error(f"❌ Erro ao baixar: {str(e)}")
+        st.stop()    # Motivo: Tratamento robusto de erro — impede que o app quebre se o GD estiver inacessível.
 
 # --- Streamlit App Layout ---
 st.set_page_config(layout="wide")
