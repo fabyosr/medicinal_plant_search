@@ -107,8 +107,8 @@ def download_from_drive():
                 use_cookies=False
             )
             flatten_if_needed(embeddings_save_directory)  # ← NOVA LINHA (corrige nesting)
-            st.write("📁 Arquivos encontrados:", os.listdir(save_directory))
-            st.write("📁 Arquivos encontrados:", os.listdir(embeddings_save_directory))
+            st.write("📁 Arquivos encontrados (save_directory):", os.listdir(save_directory))
+            st.write("📁 Arquivos encontrados (embeddings_save_directory):", os.listdir(embeddings_save_directory))
             st.info("✅ Sucesso no download dos dados !")
 
     except Exception as e:
@@ -194,13 +194,16 @@ def load_model_components():
     # Motivo: Cacheia o carregamento do modelo (executa apenas 1x por sessão — evita recarregar em cada interação).
     tokenizer = AutoTokenizer.from_pretrained(save_directory)
     # Motivo: Carrega tokenizer do diretório local (já baixado do GD).
+    st.info("✅ tokenizer loaded !")
 
     image_transform = torch.load(os.path.join(save_directory, 'image_transform.pth'))
     # Motivo: Carrega as transformações exatas usadas no treinamento.
+    st.info("✅ image_transform loaded !")
 
     embed_dim = 512
     dual_encoder_model = DualEncoder(embed_dim=embed_dim, freeze_encoders=True)
     # Motivo: Reconstrói a arquitetura (congelada para inference).
+    st.info("✅ dual_encoder_model loaded !")
 
     model_weights_path = os.path.join(save_directory, 'dual_encoder_model_weights.pth')
     dual_encoder_model.load_state_dict(torch.load(model_weights_path, map_location=torch.device('cpu')))
@@ -223,7 +226,7 @@ def load_embeddings_and_metadata():
 with st.spinner('🔄 Baixando do Google Drive e carregando modelo e dados...'):
     download_from_drive()                      # Motivo: Garante que tudo esteja no disco antes de carregar.
     tokenizer, image_transform, dual_encoder_model = load_model_components()
-    all_image_embeddings, all_text_embeddings, metadata_df = load_embeddings_and_metadata()
+    #all_image_embeddings, all_text_embeddings, metadata_df = load_embeddings_and_metadata()
 
 st.success('✅ Modelo, embeddings e imagens carregados com sucesso do Google Drive!')
 
