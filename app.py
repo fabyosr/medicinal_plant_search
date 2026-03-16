@@ -65,6 +65,8 @@ MODEL_COMPONENTS_GD_ID = "1vPnnFsO_IsDs_I4oE73KGD5Y_BpM0dac"
 EMBEDDINGS_GD_ID = "10NFY8TiwMwlBnnfBwZ2hVx98M3kfQGg5"
 # Motivo: Pasta que contém: image_embeddings.npy, text_embeddings.npy, metadata.csv e a subpasta synthetic_plant_images/.
 
+tokenizer_model_pt_br = 'neuralmind/bert-base-portuguese-cased'
+
 # Função de download (NOVA — executada uma única vez no início)
 
 def download_from_drive():
