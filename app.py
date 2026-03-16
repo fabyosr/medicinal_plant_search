@@ -151,7 +151,7 @@ class ImageEncoder(nn.Module):
         features = self.backbone(x)
         embeddings = self.projection(features)
         return embeddings
-         Motivo: Forward pass completo do encoder de imagem.
+        # Motivo: Forward pass completo do encoder de imagem.
 
 # Define the Text Encoder
 # Define the Text Encoder
