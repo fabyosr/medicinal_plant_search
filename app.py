@@ -305,6 +305,7 @@ def text_search(query_text, top_k=5):
     all_image_embeddings_normalized = all_image_embeddings / np.linalg.norm(all_image_embeddings, axis=1, keepdims=True)
     similarities = cosine_similarity(query_embedding_normalized, all_image_embeddings_normalized).flatten()
     top_k_indices = np.argsort(similarities)[::-1][:top_k]
+    st.info(f"{metadata_df.shape} Buscando top {top_k_indices} mais próximos...")
 
     results = []
     for idx in top_k_indices:
