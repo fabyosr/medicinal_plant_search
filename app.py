@@ -90,7 +90,7 @@ def download_from_drive():
     try:
         # === MODEL COMPONENTS ===
         if not os.path.exists(os.path.join(save_directory, 'dual_encoder_model_weights.pth')):
-            st.info("🔄 Baixando componentes do modelo do Google Drive...")
+            st.info("🔄 Baixando componentes do modelo...")
             gdown.download_folder(
                 id=MODEL_COMPONENTS_GD_ID,
                 output=save_directory,
@@ -269,12 +269,12 @@ def load_embeddings_and_metadata():
     return all_image_embeddings, all_text_embeddings, metadata_df
 
 # Carregamento com download automático
-with st.spinner('🔄 Baixando do Google Drive e carregando modelo e dados...'):
+with st.spinner('🔄 Baixando dados e carregando modelo...'):
     download_from_drive()                      # Motivo: Garante que tudo esteja no disco antes de carregar.
     tokenizer, image_transform, dual_encoder_model = load_model_components()
     all_image_embeddings, all_text_embeddings, metadata_df = load_embeddings_and_metadata()
 
-st.success('✅ Modelo, embeddings e imagens carregados com sucesso do Google Drive!')
+st.success('✅ Modelo, embeddings e imagens carregados com sucesso !')
 
 # Device (CPU é suficiente para inference)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -370,7 +370,7 @@ def display_results(search_results, query_type='text_to_image', query_item=None,
                 title_prefix = "Image"
 
             # ATUALIZAÇÃO: usa a variável embeddings_save_directory (compatível com Google Drive)
-            img_path = os.path.join(embeddings_save_directory, 'synthetic_plant_images', image_filename)
+            img_path = os.path.join(embeddings_save_directory, 'plant_images', image_filename)
             # Motivo: Antes era caminho hard-coded; agora usa a variável — funciona perfeitamente após download do GD.
 
             try:
