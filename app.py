@@ -374,18 +374,18 @@ def display_results(search_results, query_type='text_to_image', query_item=None,
             # Motivo: Antes era caminho hard-coded; agora usa a variável — funciona perfeitamente após download do GD.
 
             st.success(f'result {result}')
+            description = result['description']
+            similarity = result['similarity']
 
             try:
                 img = Image.open(img_path)
                 st.image(img, caption=f"{title_prefix}: {image_filename}", use_column_width=True)
-                description = result['description']
-                similarity = result['similarity']
                 display_description = description if len(description) < 100 else description[:97] + '...'
                 st.markdown(f"**Similarity:** {similarity:.4f}")
                 st.markdown(f"**Description:** {display_description}")
             except FileNotFoundError:
                 #st.error(f"Image not found at {img_path}")
-                st.write(f"**Similarity:** {similarity}")
+                st.write(f"**Similarity:** {similarity:.4f}")
                 st.write(f"**Description:** {description}")
             except Exception as e:
                 st.error(f"Error displaying image {image_filename}: {e}")
