@@ -305,11 +305,9 @@ def text_search(query_text, top_k=5):
     all_image_embeddings_normalized = all_image_embeddings / np.linalg.norm(all_image_embeddings, axis=1, keepdims=True)
     similarities = cosine_similarity(query_embedding_normalized, all_image_embeddings_normalized).flatten()
     top_k_indices = np.argsort(similarities)[::-1][:top_k]
-    st.info(f"{metadata_df.shape} Buscando top {top_k_indices} mais próximos...")
 
     results = []
     for idx in top_k_indices:
-        st.info(f"idx {idx}")
         image_filename = metadata_df.iloc[idx]['image_filename']
         description = metadata_df.iloc[idx]['description']
         similarity_score = similarities[idx]
@@ -318,7 +316,6 @@ def text_search(query_text, top_k=5):
             'description': description,
             'similarity': similarity_score
         })
-        st.info(f"funcao de busca ok...")
     return results
 
 def image_search(query_image_input, top_k=5):
@@ -375,6 +372,8 @@ def display_results(search_results, query_type='text_to_image', query_item=None,
             # ATUALIZAÇÃO: usa a variável embeddings_save_directory (compatível com Google Drive)
             img_path = os.path.join(embeddings_save_directory, 'plant_images', image_filename)
             # Motivo: Antes era caminho hard-coded; agora usa a variável — funciona perfeitamente após download do GD.
+
+            st.success(f'search_results {search_results}')
 
             try:
                 img = Image.open(img_path)
