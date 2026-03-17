@@ -309,6 +309,7 @@ def text_search(query_text, top_k=5):
 
     results = []
     for idx in top_k_indices:
+        st.info(f"idx {idx}")
         image_filename = metadata_df.iloc[idx]['image_filename']
         description = metadata_df.iloc[idx]['description']
         similarity_score = similarities[idx]
