@@ -317,6 +317,7 @@ def text_search(query_text, top_k=5):
             'description': description,
             'similarity': similarity_score
         })
+        st.info(f"funcao de busca ok...")
     return results
 
 def image_search(query_image_input, top_k=5):
@@ -396,7 +397,7 @@ top_k = st.sidebar.slider("Número de resultados", min_value=1, max_value=10, va
 
 if search_type == 'Texto para Imagem':
     st.subheader("Busca: Texto para Imagem")
-    query_text = st.text_input("Digite sua descrição da planta:", "a plant with green leaves, used for calming nerves")
+    query_text = st.text_input("Digite sua descrição da planta:", "uma planta de folhas verdes, usada para acalmar os nervos e me deixar relaxado.")
     if st.button("Buscar Imagens"):
         if query_text:
             results = text_search(query_text, top_k)
