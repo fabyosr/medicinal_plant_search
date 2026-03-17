@@ -100,7 +100,7 @@ def download_from_drive():
             flatten_if_needed(save_directory)   # ← NOVA LINHA (corrige nesting)
 
         # === EMBEDDINGS + IMAGENS ===
-        if not os.path.exists(os.path.join(embeddings_save_directory, 'meta_data.csv')):
+        if not os.path.exists(os.path.join(embeddings_save_directory, 'metadata.csv')):
             st.info("🔄 Baixando embeddings, metadados e imagens...")
             gdown.download_folder(
                 id=EMBEDDINGS_GD_ID,
@@ -265,7 +265,7 @@ def load_embeddings_and_metadata():
     # Motivo: Cacheia os dados pesados (embeddings + CSV) — roda só 1x.
     all_image_embeddings = np.load(os.path.join(embeddings_save_directory, 'image_embeddings.npy'))
     all_text_embeddings = np.load(os.path.join(embeddings_save_directory, 'text_embeddings.npy'))
-    metadata_df = pd.read_csv(os.path.join(embeddings_save_directory, 'meta_data.csv'))
+    metadata_df = pd.read_csv(os.path.join(embeddings_save_directory, 'metadata.csv'))
     return all_image_embeddings, all_text_embeddings, metadata_df
 
 # Carregamento com download automático
