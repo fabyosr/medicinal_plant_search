@@ -384,8 +384,8 @@ def display_results(search_results, query_type='text_to_image', query_item=None,
                 st.markdown(f"**Similarity:** {similarity:.4f}")
                 st.markdown(f"**Description:** {display_description}")
             except FileNotFoundError:
-                st.error(f"Image not found at {img_path}")
-                st.write(f"**Similarity:** {similarity:.4f}")
+                #st.error(f"Image not found at {img_path}")
+                st.write(f"**Similarity:** {similarity}")
                 st.write(f"**Description:** {description}")
             except Exception as e:
                 st.error(f"Error displaying image {image_filename}: {e}")
