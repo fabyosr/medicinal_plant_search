@@ -373,7 +373,7 @@ def display_results(search_results, query_type='text_to_image', query_item=None,
             img_path = os.path.join(embeddings_save_directory, 'plant_images', image_filename)
             # Motivo: Antes era caminho hard-coded; agora usa a variável — funciona perfeitamente após download do GD.
 
-            st.success(f'search_results {search_results}')
+            st.success(f'result {result}')
 
             try:
                 img = Image.open(img_path)
