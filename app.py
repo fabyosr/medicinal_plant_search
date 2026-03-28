@@ -338,7 +338,7 @@ def main():
                     img = Image.open(img_path)
                     st.image(img, use_column_width=True, border_radius=8)
                 except FileNotFoundError:
-                    st.error(f"Arquivo visual indisponível: {res['image_filename']}")
+                    st.error(f"Arquivo visual indisponível: {img_path} {res['image_filename']}")
                 
                 # Título da Planta e Barra de Similaridade
                 st.markdown(f"<div class='plant-title'>{res['plant_name']}</div>", unsafe_allow_html=True)
