@@ -118,14 +118,17 @@ def render_similarity_bar(score):
 class DataManager:
     @staticmethod
     def _flatten_if_needed(target_dir):
-        """Remove subpasta extra criada pelo gdown."""
+        """Corrige o problema de subpastas extras criadas pelo gdown de forma segura."""
         items = os.listdir(target_dir)
-        subdirs = [d for d in items if os.path.isdir(os.path.join(target_dir, d))]
-        if len(subdirs) == 1 and len(items) <= 10:
-            subfolder = os.path.join(target_dir, subdirs[0])
-            for item in os.listdir(subfolder):
-                shutil.move(os.path.join(subfolder, item), os.path.join(target_dir, item))
-            os.rmdir(subfolder)
+        
+        # Se a pasta alvo tem EXATAMENTE 1 item, e esse item é uma pasta,
+        # significa que o gdown envelopou tudo numa pasta extra.
+        if len(items) == 1:
+            subfolder = os.path.join(target_dir, items[0])
+            if os.path.isdir(subfolder):
+                for item in os.listdir(subfolder):
+                    shutil.move(os.path.join(subfolder, item), os.path.join(target_dir, item))
+                os.rmdir(subfolder)
 
     @classmethod
     def download_assets(cls):
@@ -338,7 +341,7 @@ def main():
                     img = Image.open(img_path)
                     st.image(img, use_column_width=True, border_radius=8)
                 except FileNotFoundError:
-                    st.error(f"Arquivo visual indisponível: {img_path} {res['image_filename']}")
+                    st.error(f"Arquivo visual indisponível: {res['image_filename']}")
                 
                 # Título da Planta e Barra de Similaridade
                 st.markdown(f"<div class='plant-title'>{res['plant_name']}</div>", unsafe_allow_html=True)
