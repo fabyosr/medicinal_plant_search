@@ -94,6 +94,11 @@ def apply_custom_css():
             background-color: #1E3B2D;
             box-shadow: 0 6px 15px rgba(45,90,67,0.4);
         }
+        
+        /* Arredonda as bordas das imagens renderizadas pelo Streamlit */
+        [data-testid="stImage"] img {
+            border-radius: 8px;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -339,7 +344,7 @@ def main():
                 img_path = os.path.join(Config.PLANT_IMAGES_DIR, res['image_filename'])
                 try:
                     img = Image.open(img_path)
-                    st.image(img, use_column_width=True, border_radius=8)
+                    st.image(img, use_column_width=True)
                 except FileNotFoundError:
                     st.error(f"Arquivo visual indisponível: {res['image_filename']}")
                 
